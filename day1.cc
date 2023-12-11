@@ -21,13 +21,13 @@ ABSL_FLAG(std::string, input_file, "", "Input file to process");
 class WordTree;
 
 // Builds a WordTree for searching for words from the left.
-std::unique_ptr<WordTree> BuildWordTree();
+std::unique_ptr<const WordTree> BuildWordTree();
 
 // Builds a WordTree for searching for words from the right.
-std::unique_ptr<WordTree> BuildReverseWordTree();
+std::unique_ptr<const WordTree> BuildReverseWordTree();
 
 // Finds the first digit from either the left or right, given the input WordTree.
-absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<WordTree>& dictionary);
+absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<const WordTree>& word_tree);
 
 // Builds two WordTrees, one for each direction we're searching:
 // - Forward: index words "one", "two", "three", etc
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
     absl::ParseCommandLine(argc, argv);
 
     // Build an index for each forward and backward searching.
-    std::unique_ptr<WordTree> dictionary = BuildWordTree();
-    std::unique_ptr<WordTree> reverse_dictionary = BuildReverseWordTree();
+    std::unique_ptr<const WordTree> forward_tree = BuildWordTree();
+    std::unique_ptr<const WordTree> reverse_tree = BuildReverseWordTree();
 
     std::string file_name = absl::GetFlag(FLAGS_input_file);
     std::cout << "Loading: " << file_name << std::endl;
@@ -53,8 +53,8 @@ int main(int argc, char* argv[]) {
     std::string line;
     int sum = 0;
     while (std::getline(file, line)) {
-        absl::StatusOr<int> left = FindFirstDigit(line, true, dictionary);
-        absl::StatusOr<int> right = FindFirstDigit(line, false, reverse_dictionary);
+        absl::StatusOr<int> left = FindFirstDigit(line, true, forward_tree);
+        absl::StatusOr<int> right = FindFirstDigit(line, false, reverse_tree);
         if (!left.ok() || !right.ok()) {
             std::cout << "ERROR\n";
             return 2;
@@ -69,8 +69,14 @@ int main(int argc, char* argv[]) {
 
 class WordTree {
 public:
+    // Creates a new tree with no matching digit at this node.
     WordTree()
         : digit_(-1)
+    {}
+
+    // Creates a new tree with a matching digit at this node.
+    WordTree(int digit)
+        : digit_(digit)
     {
         for (int i = 0; i < 26; i++) {
             next_[i] = nullptr;
@@ -103,13 +109,9 @@ public:
         // ensure target home
         int letter_index = Normalize(str.at(0));
         if (next_[letter_index] == nullptr) {
-            next_[letter_index] = new WordTree();
+            next_[letter_index] = new WordTree(str.size() == 1 ? digit : -1);
         }
-        // store digit if terminus
-        if (str.size() == 1) {
-            next_[letter_index]->digit_ = digit;
-        } else {
-            // rest of string
+        if (str.size() > 1) {
             next_[letter_index]->IndexString(str.substr(1), digit);
         }
     }
@@ -127,14 +129,14 @@ private:
     }
 
     // if set to something other than -1, we've found a spelled-out digit.
-    int digit_ = -1;
+    const int digit_;
 
     // child nodes of remaining possibile matches, where 'a' is the 0-index,
     // 'z' is the 25th.
     WordTree* next_[26];
 };
 
-absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<WordTree>& dictionary) {
+absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<const WordTree>& word_tree) {
     absl::flat_hash_set<WordTree*> possible_matches;
 
     int step = from_left ? 1 : -1;
@@ -162,7 +164,7 @@ absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std:
         }
 
         // start a new search
-        WordTree* next_possible_match = dictionary->Find(this_letter);
+        WordTree* next_possible_match = word_tree->Find(this_letter);
         if (next_possible_match != nullptr) {
             new_matches.insert(next_possible_match);
         }
@@ -171,7 +173,7 @@ absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std:
     return absl::InvalidArgumentError("Couldn't find any digit");
 }
 
-std::unique_ptr<WordTree> BuildWordTree() {
+std::unique_ptr<const WordTree> BuildWordTree() {
     std::unique_ptr<WordTree> ret = std::make_unique<WordTree>();
     ret->IndexString("one", 1);
     ret->IndexString("two", 2);
@@ -186,7 +188,7 @@ std::unique_ptr<WordTree> BuildWordTree() {
     return ret;
 }
 
-std::unique_ptr<WordTree> BuildReverseWordTree() {
+std::unique_ptr<const WordTree> BuildReverseWordTree() {
     std::unique_ptr<WordTree> ret = std::make_unique<WordTree>();
     ret->IndexString("eno", 1);
     ret->IndexString("owt", 2);
