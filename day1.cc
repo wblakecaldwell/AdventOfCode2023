@@ -85,7 +85,7 @@ public:
     }
 
     // Returns the digit found, or -1 if nothing yet.
-    int DigitFound() {
+    int DigitFound() const {
         return digit_;
     }
 
