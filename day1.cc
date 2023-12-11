@@ -108,8 +108,7 @@ public:
         // store digit if terminus
         if (str.size() == 1) {
             next_[letter_index]->digit_ = digit;
-        }
-        else {
+        } else {
             // rest of string
             next_[letter_index]->IndexString(str.substr(1), digit);
         }
