@@ -29,6 +29,13 @@ std::unique_ptr<WordTree> BuildReverseWordTree();
 // Finds the first digit from either the left or right, given the input WordTree.
 absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<WordTree>& dictionary);
 
+// Builds two WordTrees, one for each direction we're searching:
+// - Forward: index words "one", "two", "three", etc
+// - Backward: index words "eno", "owt", "eerht", etc
+// Read each line from the input file, traverse from the left with the
+// forward index, and from the right with the backward index, keeping
+// a collection of running matches, stopping traversal once we find
+// a digit, either as a single digit character, or a digit spelled out.
 int main(int argc, char* argv[]) {
     absl::ParseCommandLine(argc, argv);
 
@@ -134,6 +141,7 @@ absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std:
     int step = from_left ? 1 : -1;
     for (int pos = from_left ? 0 : line.size() - 1; pos >= 0 && pos < line.size(); pos += step) {
         // check for digit
+        // Note: could have indexed these too, but this is simpler, and keeps the index smaller.
         int digit = line.at(pos) - '0';
         if (digit >= 0 && digit <= 9) {
             return digit;
