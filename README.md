@@ -3,8 +3,8 @@ C++ Solutions to 2023 Advent of Code
 
 Build system: [Bazel](https://bazel.build)
 
-How to build
-------------
+How to run solutions
+--------------------
 
 I included my `.bazelrc` for MacOS 14, C++ 17. You might have to change that for your system.
 
