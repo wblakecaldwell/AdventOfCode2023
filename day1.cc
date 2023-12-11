@@ -12,6 +12,9 @@
 
 ABSL_FLAG(std::string, input_file, "", "Input file to process");
 
+// Which direction we search through a line of text.
+enum SearchDirection { FORWARD, REVERSE };
+
 // Represents a position in a tree of all remaining possible matches for a given
 // attempt. For example, if the last two characters are "on", then we'd have an
 // instance of this WordTree that's got one more possibilty left - if the next
@@ -21,13 +24,15 @@ ABSL_FLAG(std::string, input_file, "", "Input file to process");
 class WordTree;
 
 // Builds a WordTree for searching for words from the left.
-std::unique_ptr<const WordTree> BuildWordTree();
+std::unique_ptr<const WordTree> BuildForwardWordTree();
 
 // Builds a WordTree for searching for words from the right.
 std::unique_ptr<const WordTree> BuildReverseWordTree();
 
 // Finds the first digit from either the left or right, given the input WordTree.
-absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<const WordTree>& word_tree);
+absl::StatusOr<int> FindFirstDigit(const std::string& line,
+    SearchDirection search_direction,
+    std::unique_ptr<const WordTree>& word_tree);
 
 // Builds two WordTrees, one for each direction we're searching:
 // - Forward: index words "one", "two", "three", etc
@@ -40,7 +45,7 @@ int main(int argc, char* argv[]) {
     absl::ParseCommandLine(argc, argv);
 
     // Build an index for each forward and backward searching.
-    std::unique_ptr<const WordTree> forward_tree = BuildWordTree();
+    std::unique_ptr<const WordTree> forward_tree = BuildForwardWordTree();
     std::unique_ptr<const WordTree> reverse_tree = BuildReverseWordTree();
 
     std::string file_name = absl::GetFlag(FLAGS_input_file);
@@ -53,8 +58,8 @@ int main(int argc, char* argv[]) {
     std::string line;
     int sum = 0;
     while (std::getline(file, line)) {
-        absl::StatusOr<int> left = FindFirstDigit(line, true, forward_tree);
-        absl::StatusOr<int> right = FindFirstDigit(line, false, reverse_tree);
+        absl::StatusOr<int> left = FindFirstDigit(line, FORWARD, forward_tree);
+        absl::StatusOr<int> right = FindFirstDigit(line, REVERSE, reverse_tree);
         if (!left.ok() || !right.ok()) {
             std::cout << "ERROR\n";
             return 2;
@@ -136,11 +141,15 @@ private:
     WordTree* next_[26];
 };
 
-absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std::unique_ptr<const WordTree>& word_tree) {
-    absl::flat_hash_set<WordTree*> possible_matches;
+absl::StatusOr<int> FindFirstDigit(
+    const std::string& line,
+    SearchDirection search_direction,
+    std::unique_ptr<const WordTree>& word_tree) {
 
-    int step = from_left ? 1 : -1;
-    for (int pos = from_left ? 0 : line.size() - 1; pos >= 0 && pos < line.size(); pos += step) {
+    absl::flat_hash_set<WordTree*> possible_matches;
+    int start = search_direction == FORWARD ? 0 : line.size() - 1;
+    int step = search_direction == FORWARD ? 1 : -1;
+    for (int pos = start; pos >= 0 && pos < line.size(); pos += step) {
         // check for digit
         // Note: could have indexed these too, but this is simpler, and keeps the index smaller.
         int digit = line.at(pos) - '0';
@@ -173,7 +182,7 @@ absl::StatusOr<int> FindFirstDigit(const std::string& line, bool from_left, std:
     return absl::InvalidArgumentError("Couldn't find any digit");
 }
 
-std::unique_ptr<const WordTree> BuildWordTree() {
+std::unique_ptr<const WordTree> BuildForwardWordTree() {
     std::unique_ptr<WordTree> ret = std::make_unique<WordTree>();
     ret->IndexString("one", 1);
     ret->IndexString("two", 2);
