@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
             std::cout << "ERROR\n";
             return 2;
         }
-        int this_num = left.value() * 10 + right.value();
+        int this_num = *left * 10 + *right;
         std::cout << this_num << ": " << line << "\n";
         sum += this_num;
     }
