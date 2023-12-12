@@ -10,6 +10,7 @@ void ProcessFile(const std::string& filename);
 int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
   std::string file_path = absl::GetFlag(FLAGS_input_file);
+  std::cout << "Loading: " << file_path << std::endl << std::endl;
   ProcessFile(file_path);
 }
 

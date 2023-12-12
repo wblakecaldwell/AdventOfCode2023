@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<const WordTree> reverse_tree = BuildReverseWordTree();
 
     std::string file_name = absl::GetFlag(FLAGS_input_file);
-    std::cout << "Loading: " << file_name << std::endl;
+    std::cout << "Loading: " << file_name << std::endl << std::endl;
     std::ifstream file(absl::StrCat(file_name));
     if (!file.is_open()) {
         std::cerr << "Unable to open file\n";

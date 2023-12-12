@@ -31,6 +31,10 @@ up all the lines for a final answer.
 
 - **Code:** [here](day1.cc)
 
+- **Input:** [here](input/day1/input.txt)
+
+- **Output:** [here](output/day1.txt)
+
 - **Run Code:**
 
 ```
@@ -47,6 +51,10 @@ seen that game.
 - **Full desccription:** [here](DAY_2.md)
 
 - **Code:** [here](day2.cc)
+
+- **Input:** [here](input/day2/input.txt)
+
+- **Output:** [here](output/day2.txt)
 
 - **Run Code:**
 
