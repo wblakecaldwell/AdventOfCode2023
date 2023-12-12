@@ -20,7 +20,7 @@ Read a file, and for each line, find the first digit from the left and from the 
 spelled out _("one", "two", "three")_, put the two digits together _("1abc2"" gives you "12")_, then add
 up all the lines for a final answer.
 
-___Note:___ I went a little overboard trying to be optimal on this one :)
+_Note: I went a little overboard trying to be optimal on this one :)_
 
 - **Full desccription:** [here](DAY_1.md)
 
