@@ -36,3 +36,20 @@ up all the lines for a final answer.
 ```
 bazel run //:day1 -- --input_file=input/day1/input.txt
 ```
+
+Puzzle 1: Cube Conundrum
+------------------------
+
+Read a file that represents someone reaching into a bag of dice and making several rolls per short
+game. Figure out some info about possible counts of different colors in that bag based on the rolls
+seen that game.
+
+- **Full desccription:** [here](DAY_2.md)
+
+- **Code:** [here](day2.cc)
+
+- **Run Code:**
+
+```
+bazel run //:day2 -- --input_file=input/day2/input.txt
+```
