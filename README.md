@@ -37,7 +37,7 @@ up all the lines for a final answer.
 bazel run //:day1 -- --input_file=input/day1/input.txt
 ```
 
-Puzzle 1: Cube Conundrum
+Puzzle 2: Cube Conundrum
 ------------------------
 
 Read a file that represents someone reaching into a bag of dice and making several rolls per short
