@@ -1,1 +1,1 @@
-build --macos_sdk_version=14.0 --cxxopt='-std=c++17' --host_cxxopt='-std=c++17'
+build --macos_sdk_version=14.2 --cxxopt='-std=c++17' --host_cxxopt='-std=c++17'
