@@ -78,7 +78,7 @@ struct Item {
 // and the ratio, if match_count is 2.
 struct GearRatio {
   int match_count = 0;
-  // holds the ratio, but only a valid ratio if match_count==2. If 1, just holds first match value.
+  // holds the ratio, but only a valid ratio if match_count==2. If 1, just holds first match value, if >2, holds 0.
   int ratio;
 
   // Registers a match, updating match_count and the gear ratio.
