@@ -129,10 +129,9 @@ std::vector<Item> ParseLine(absl::string_view line, int row) {
   return ret;
 }
 
-// Loops over each line:
-// 1. evaluate numbers determined part number from this line alone
-// 2. remember position of symbols for next line
-// 3. check this line's symbols against previous line
+// Loops over each line, keeps track of operators and numbers from this and the previous line.
+// Checks every number in that list against every operator. All operators from the current line,
+// and all numbers that haven't matched are carried into the next row's collection for comparison.
 void ProcessFile(const std::string& filename) {
   std::ifstream file(filename);
   std::string line;
