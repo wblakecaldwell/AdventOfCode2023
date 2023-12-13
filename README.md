@@ -79,5 +79,5 @@ those numbers together and keep a separate running sum of these "gear ratios".
 - **Run Code:**
 
 ```
-bazel run //:day2 -- --input_file=input/day2/input.txt
+bazel run //:day3 -- --input_file=input/day3/input.txt
 ```
