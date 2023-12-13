@@ -10,6 +10,9 @@ I included my [`.bazelrc`](.bazelrc) for MacOS 14, C++ 17. You might have to cha
 
 Look at the [BUILD](BUILD) file for different targets, _("day1", "day2", etc)_.
 
+I put a bunch of effort into Day 1 to try to be somewhat optimal. By Day 3, I'm now just trying to solve
+and move on :)
+
 Puzzles
 =======
 
