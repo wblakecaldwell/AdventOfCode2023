@@ -1,0 +1,4 @@
+Loading: input/day3/input.txt
+
+Sum: 527446
+Gear Ratio Sum: 73201705
