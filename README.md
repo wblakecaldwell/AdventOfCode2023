@@ -56,3 +56,25 @@ seen that game.
 ```
 bazel run //:day2 -- --input_file=input/day2/input.txt
 ```
+
+Puzzle 3: Gear Ratios
+---------------------
+
+Read a file that has a block of text that includes periods, digits, and special characters. Sum
+the numbers that are neighboring a special character (same line, or prev/next, including diagonal).
+In addition, if a special character is an asterisk, and neighbors exactly two numbers, multiply
+those numbers together and keep a separate running sum of these "gear ratios".
+
+- **Full desccription:** [here](DAY_3.md)
+
+- **Code:** [here](day3.cc)
+
+- **Input:** [here](input/day3/input.txt)
+
+- **Output:** [here](output/day3.txt)
+
+- **Run Code:**
+
+```
+bazel run //:day2 -- --input_file=input/day2/input.txt
+```
