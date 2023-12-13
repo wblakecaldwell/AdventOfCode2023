@@ -5,6 +5,7 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/string_view.h"
 #include <fstream>
+#include <cstdlib>
 #include <vector>
 
 ABSL_FLAG(std::string, input_file, "", "Input file to process");
@@ -14,19 +15,42 @@ void ProcessFile(const std::string& filename);
 int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
   std::string file_path = absl::GetFlag(FLAGS_input_file);
-  std::cout << "Loading: " << file_path << std::endl << std::endl;
+  std::cout << "Loading: " << file_path << std::endl;
   ProcessFile(file_path);
 }
 
 struct Item {
-  int value; // -1 for symbol
+  int row;
   int column_start;
   int column_end;
+  int value; // -1 for symbol
+  Item(int row)
+    : row(row), column_start(-1), column_end(-1), value(0)
+  {}
+  Item(int row, int column_start, int column_end, int value)
+    : row(row), column_start(column_start), column_end(column_end), value(value)
+  {}
+  bool IsNumber() {
+    return value > 0;
+  }
+  bool IsSymbol() {
+    return value == -1;
+  }
+
+  // Checks if this is a number that's adjacent to the input item,
+  // which is a symbol.
+  bool IsNumberAdjacentToSymbol(Item& symbol) {
+    if (!IsNumber() || !symbol.IsSymbol() || abs(row - symbol.row) > 1) {
+      return false;
+    }
+    return
+      (symbol.column_start >= column_start - 1) && (symbol.column_start <= column_end + 1);
+  }
 };
 
-std::vector<Item> ParseLine(absl::string_view line) {
+std::vector<Item> ParseLine(absl::string_view line, int row) {
   std::vector<Item> ret;
-  Item current_item{0, -1, -1};
+  Item current_item(row);
   for (int i = 0; i < line.length(); i++) {
     char c = line.at(i);
     if (c >= '0' && c <= '9') {
@@ -37,15 +61,15 @@ std::vector<Item> ParseLine(absl::string_view line) {
       if (current_item.value > 0) {
         current_item.column_end = i - 1;
         ret.push_back(current_item);
-        current_item = {0, -1, -1};
+        current_item = Item(row);
       }
       if (c != '.') {
         // symbol
-        ret.push_back({-1, i, i});
+        ret.emplace_back(row, i, i, -1);
       }
     }
   }
-  if(current_item.column_start > -1) {
+  if (current_item.column_start > -1) {
     ret.push_back(current_item);
   }
   return ret;
@@ -60,15 +84,39 @@ void ProcessFile(const std::string& filename) {
   std::string line;
   int sum = 0;
 
-
   std::vector<Item> prev_line_items;
+  int row = 0;
   // each line
   while (std::getline(file, line)) {
-    std::vector<Item> items = ParseLine(line);
-    std::cout << line << std::endl;
-    for(Item item : items) {
-      std::cout << "\t" << (item.value > -1 ? absl::StrCat(item.value) : "*") << " from: " << item.column_start << "-" << item.column_end << std::endl;
+    // parse this line
+    std::vector<Item> items = ParseLine(line, row);
+
+    // group all items to be considered into one group, and inefficiently compare them all
+    std::vector<Item> carry_over;
+    prev_line_items.insert(prev_line_items.end(), items.begin(), items.end());
+    for (Item number : prev_line_items) {
+      bool number_matched = false;
+      if (number.IsNumber()) {
+        for (Item symbol : prev_line_items) {
+          if (symbol.IsSymbol()) {
+            if (symbol.row == row) {
+              carry_over.push_back(symbol);
+            }
+            if (number.IsNumberAdjacentToSymbol(symbol)) {
+              sum += number.value;
+              number_matched = true;
+              break;
+            }
+          }
+        }
+        if (!number_matched && number.row == row) {
+          carry_over.push_back(number);
+        }
+      } // IsNuber
     }
+
+    prev_line_items = carry_over;
+    row++;
   } // each line
 
   std::cout << std::endl;
