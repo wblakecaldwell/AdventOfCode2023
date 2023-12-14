@@ -100,5 +100,5 @@ calculating the number of points you win.
 - **Run Code:**
 
 ```
-bazel run //:day3 -- --input_file=input/day3/input.txt
+bazel run //:day4 -- --input_file=input/day4/input.txt
 ```
