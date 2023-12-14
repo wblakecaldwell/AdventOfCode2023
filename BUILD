@@ -36,3 +36,16 @@ cc_binary(
       "@com_google_absl//absl/strings",
     ]
 )
+
+cc_binary(
+    name = "day4",
+    data = glob(["input/**"]),
+    srcs = [
+      "day4.cc"
+      ],
+    deps = [
+      "@com_google_absl//absl/flags:parse",
+      "@com_google_absl//absl/status:statusor",
+      "@com_google_absl//absl/strings",
+    ]
+)
