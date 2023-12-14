@@ -81,3 +81,24 @@ those numbers together and keep a separate running sum of these "gear ratios".
 ```
 bazel run //:day3 -- --input_file=input/day3/input.txt
 ```
+
+Day 4: Scratchcards
+-------------------
+
+Read a file that represents scratch-off cards, one card per line. Each line has a card number, followed
+by winning numbers, a "|", and then the numbers in play. Part 1 and 2 have different methods for
+calculating the number of points you win.
+
+- **Full desccription:** [here](DAY_4.md)
+
+- **Code:** [here](day4.cc)
+
+- **Input:** [here](input/day4/input.txt)
+
+- **Output:** [here](output/day4.txt)
+
+- **Run Code:**
+
+```
+bazel run //:day3 -- --input_file=input/day3/input.txt
+```
