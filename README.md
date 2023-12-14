@@ -86,7 +86,7 @@ Day 4: Scratchcards
 -------------------
 
 Read a file that represents scratch-off cards, one card per line. Each line has a card number, followed
-by winning numbers, a "|", and then the numbers in play. Part 1 and 2 have different methods for
+by winning numbers, a `|`, and then the numbers in play. Part 1 and 2 have different methods for
 calculating the number of points you win.
 
 - **Full desccription:** [here](DAY_4.md)
