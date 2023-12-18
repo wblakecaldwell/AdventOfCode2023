@@ -102,3 +102,25 @@ calculating the number of points you win.
 ```
 bazel run //:day4 -- --input_file=input/day4/input.txt
 ```
+
+Day 5: If You Give A Seed A Fertilizer
+--------------------------------------
+
+Read a file that represents a way to find which seeds can be planted in which
+locations. Parse the file and walk through the different source-to-dest mappings
+from seed to soil, fertilizer, water, light, temperature, humidity, and ultimately,
+location.
+
+- **Full desccription:** [here](DAY_5.md)
+
+- **Code:** [here](day5.cc)
+
+- **Input:** [here](input/day5/input.txt)
+
+- **Output:** [here](output/day5.txt)
+
+- **Run Code:**
+
+```
+bazel run //:day4 -- --input_file=input/day4/input.txt
+```
