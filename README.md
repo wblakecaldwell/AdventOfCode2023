@@ -122,5 +122,5 @@ location.
 - **Run Code:**
 
 ```
-bazel run //:day4 -- --input_file=input/day4/input.txt
+bazel run //:day5 -- --input_file=input/day5/input.txt
 ```

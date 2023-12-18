@@ -112,6 +112,8 @@ So, the lowest location number in this example is 35.
 
 What is the lowest location number that corresponds to any of the initial seed numbers?
 
+Your puzzle answer was 510109797.
+
 Part Two
 --------
 
@@ -130,3 +132,9 @@ Now, rather than considering four seed numbers, you need to consider a total of 
 In the above example, the lowest location number can be obtained from seed number 82, which corresponds to soil 84, fertilizer 84, water 84, light 77, temperature 45, humidity 46, and location 46. So, the lowest location number is 46.
 
 Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
+
+Your puzzle answer was 9622622.
+
+
+
+

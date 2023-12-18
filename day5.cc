@@ -1,15 +1,7 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
-#include "absl/hash/hash.h"
 #include <fstream>
-#include <map>
 #include <sstream>
-#include <cstdlib>
-#include <cmath>
-#include <vector>
-#include <algorithm>
 
 ABSL_FLAG(std::string, input_file, "", "Input file to process");
 
@@ -39,6 +31,7 @@ struct MappingBlock {
     }
   }
 
+  // Find the dest given the source
   int64_t FindDest(int64_t source) {
     for (SourceDestMap m : sorted_mappings) {
       if (source >= m.source_start && source <= m.source_start + m.range - 1) {
@@ -142,26 +135,62 @@ void ProcessFile(const std::string& filename) {
 
   // Part 1:
   int64_t lowest_location = -1;
+
+  // update lowest_location if the input is lower; return input
+  auto register_location = [&lowest_location](int64_t location)
+    {
+      if (lowest_location == -1 || location < lowest_location) {
+        lowest_location = location;
+      }
+      return location;
+    };
+
   for (int64_t seed : seeds) {
-    int64_t location = find_location(seed);
-    if (lowest_location == -1 || location < lowest_location) {
-      lowest_location = location;
-    }
+    register_location(find_location(seed));
   }
   std::cout << "Part 1: " << lowest_location << std::endl;
 
   // Part 2
+  struct IntPairs {
+    int64_t start;
+    int64_t end;
+  };
+  std::vector<IntPairs> pairs;
   lowest_location = -1;
   for (int seed_pair = 0; seed_pair < seeds.size() / 2; seed_pair++) {
-    int seed_range_start = seeds[seed_pair * 2];
-    int seed_range_end = seed_range_start + seeds[seed_pair * 2 + 1];
-    // std::cout << "range: " << seed_range_start << "-" << seed_range_end << std::endl;
-    for (int seed = seed_range_start; seed < seed_range_end; seed++) {
-      int64_t location = find_location(seed);
-      if (lowest_location == -1 || location < lowest_location) {
-        lowest_location = location;
+    int64_t start = seeds[seed_pair * 2];
+    int64_t end = start + seeds[seed_pair * 2 + 1];
+    if (start > end) {
+      std::cout << "Start is bigger than end: start:" << start << "-" << end << std::endl;
+    }
+    pairs.push_back({ start, end - 1 });
+  }
+
+  // std::cout << "range: " << seed_range_start << "-" << seed_range_end << std::endl;
+  for (int pair_index = 0; pair_index < pairs.size(); pair_index++) {
+    int64_t start = pairs.at(pair_index).start;
+    int64_t end = pairs.at(pair_index).end;
+
+    int64_t start_location = register_location(find_location(start));
+    int64_t end_location = register_location(find_location(end));
+
+    // Note: we assume that in the ranges of seeds given to us, if their locations appears linear
+    // by checking the start and end location, then they are, and we don't have to search seeds
+    // within that range, since the start seed will have the lowest location. The data could be
+    // arranged so that this doesn't work, but in this puzzle, it's not. So, we assume that this
+    // assumption was intended to be made, since it wasn't called out in the description.
+    if (end - start != end_location - start_location) {
+      int64_t mid = ((end - start) / 2) + start;
+      if (mid < start || mid > end) {
+        std::cout << "Invalid start/mid/end: start:" << start << ", mid: " << mid << ", end: " << end << std::endl;
+        exit(1);
       }
-      std::cout << "seed :" << seed << "; location: " << location << std::endl;
+      if (mid > start + 1) {
+        pairs.push_back({ start + 1, mid });
+      }
+      if (mid + 1 < end - 1) {
+        pairs.push_back({ mid + 1, end - 1 });
+      }
     }
   }
   std::cout << "Part 2: " << lowest_location << std::endl;
